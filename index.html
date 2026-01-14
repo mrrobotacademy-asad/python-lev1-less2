@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr Robot Academy - التحدي الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --correct: #2ed573;
+            --wrong: #ff4757;
+            --warning: #f1c40f;
+            --bg: #0f0c29;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --radius: 15px;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b, #0f0c29);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .header { text-align: center; padding: 25px; width: 100%; }
+        
+        .logo-img { 
+            width: 220px; 
+            height: auto; 
+            max-height: 100px;
+            object-fit: contain;
+            border: 3px solid var(--secondary);
+            border-radius: 10px;
+            padding: 5px;
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(0,206,201,0.3);
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 25px;
+            width: 90%;
+            max-width: 800px;
+            margin-bottom: 50px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        /* --- تحسين قسم الشرح التفاعلي --- */
+        .explanation-slider {
+            position: relative;
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--radius);
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 5px solid var(--primary);
+            transition: 0.3s;
+        }
+
+        .explanation-card h3 { color: var(--secondary); margin-top: 0; font-size: 1.6rem; }
+        .example-text { color: var(--warning); font-style: italic; margin-top: 10px; font-size: 0.95rem; }
+        
+        .slider-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .nav-btn:disabled { background: #444; cursor: not-allowed; }
+
+        /* --- بقية العناصر --- */
+        .code-block {
+            background: #1e1e1e;
+            color: #58D68D;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            direction: ltr;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .status-bar {
+            display: flex; justify-content: space-between; background: rgba(0,0,0,0.4);
+            padding: 15px; border-radius: var(--radius); margin-bottom: 20px; font-weight: bold;
+        }
+
+        .code-display {
+            background: #000; padding: 25px; border-radius: var(--radius); font-family: 'Fira Code', monospace;
+            direction: ltr; text-align: left; border-left: 5px solid var(--primary); margin-bottom: 20px; font-size: 1.4rem; white-space: pre-wrap;
+        }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .option-btn {
+            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1);
+            padding: 18px; color: white; cursor: pointer; border-radius: var(--radius); transition: 0.3s;
+            font-size: 1.1rem; font-family: 'Cairo';
+        }
+        .option-btn:hover { background: var(--primary); transform: scale(1.02); }
+        .option-btn.selected { background: var(--primary); border-color: white; }
+
+        .btn-main {
+            background: linear-gradient(to right, var(--primary), #8e44ad);
+            color: white; border: none; padding: 18px 40px;
+            cursor: pointer; font-weight: 900; border-radius: 50px; font-size: 1.3rem;
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .hidden { display: none !important; }
+        input[type="text"] {
+            width: 80%; padding: 15px; background: rgba(0,0,0,0.3); border: 2px solid var(--primary); color: white; border-radius: var(--radius); text-align: center; font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <img src="logo.png" alt="Mr Robot Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/220x80/6c5ce7/ffffff?text=MY+LOGO';">
+    <h1 style="margin:15px 0; font-size: 2.2rem;">Mr Robot Academy</h1><br><h6 style="margin:2px 0; font-size: 1.2rem;">مهندس/ أندرو مجدي -  Phone: 01285529570   </h6>
+</div>
+
+<div class="container">
+    <div id="start-screen">
+        <h2 style="color:var(--warning);">🚀 رحلة تعلم بايثون الممتعة (فصل الدالة)</h2>
+        
+        <div class="explanation-slider">
+            <div id="slide-content"></div>
+            <div class="slider-nav">
+                <button class="nav-btn" onclick="moveSlide(-1)" id="prevSlide">السابق</button>
+                <span id="slide-num" style="align-self:center; font-weight:bold;">1 / 20</span>
+                <button class="nav-btn" onclick="moveSlide(1)" id="nextSlide">التالي</button>
+            </div>
+        </div>
+
+        <div style="margin: 30px 0;">
+            <input type="text" id="username" placeholder="اكتب اسمك يا بطل هنا...">
+        </div>
+        
+        <button class="btn-main" onclick="initQuiz()">ابدأ تحدي الـ 30 سؤال 🎯</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="status-bar">
+            <div>⏰ <span id="timer-val">00:00</span></div>
+            <div id="progress-text" style="color:var(--secondary)">السؤال 1 / 30</div>
+            <div>⭐ <span id="score-val">0</span></div>
+        </div>
+        
+        <div class="question-zone">
+            <h3 id="q-text" style="font-size: 1.4rem;"></h3>
+            <div class="code-display" id="q-code"></div>
+            
+            <div id="options-container" class="options-grid"></div>
+            
+            <div id="input-container" class="hidden">
+                <input type="text" id="user-code-input" placeholder="اكتب إجابتك هنا...">
+            </div>
+
+            <div id="hint-box" style="margin-top:20px; display:none; color:var(--warning); background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
+                💡 تلميحة: <span id="hint-text"></span>
+            </div>
+
+            <div class="control-group">
+                <button class="option-btn" style="background:#555; padding: 10px 20px;" onclick="navigate(-1)" id="prev-btn">⬅️ السابق</button>
+                <button class="option-btn" style="background:var(--warning); color:#000; padding: 10px 20px;" onclick="skipQuestion()">⏭️ تخطي</button>
+                <button class="option-btn" style="background:var(--wrong); padding: 10px 20px;" onclick="revealAnswer()">🔑 إجابة</button>
+                <button class="btn-main" style="flex-grow:1;" onclick="handleStep()">التحقق من الإجابة ✅</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h1 style="font-size: 4rem;">🏆</h1>
+        <h2 id="congrats-msg">ممتاز!</h2>
+        <p id="final-stats" style="font-size:1.5rem"></p>
+        <button class="btn-main" onclick="location.reload()">جولة جديدة 🔄</button>
+    </div>
+</div>
+
+<script>
+const detailedExplanation = [
+    { title: "الروبوت المطيع 🤖", code: "def", desc: "الدالة هي روبوت صغير نبرمجه مرة واحدة ونناديه كلما احتجنا إليه.", example: "تخيل روبوت اسمه greet، وظيفته فقط أن يقول 'أهلاً'." },
+    { title: "كلمة السر ✨", code: "def", desc: "لابد أن نبدأ بكلمة def لنخبر بايثون أننا نصنع دالة جديدة.", example: "الكود: def my_robot():" },
+    { title: "تسمية الروبوت 🏷️", code: "Name", desc: "نختار اسماً للدالة يعبر عن وظيفتها، ويفضل أن يكون بسيطاً.", example: "مثال: def jump(): (دالة تجعل الشخصية تقفز)" },
+    { title: "شنطة المعلومات 🎒", code: "()", desc: "الأقواس هي مثل الشنطة التي نضع فيها الأشياء التي سيعمل عليها الروبوت.", example: "الكود: def eat(food): (الشنطة تنتظر وضع الطعام)" },
+    { title: "إشارة البدء 🚦", code: ":", desc: "النقطتان الرأسيتان تعني: انتبه يا بايثون، سأبدأ بكتابة الأوامر الآن!", example: "الكود: def start(): (لا تنسَ النقطتين في النهاية)" },
+    { title: "المسافة السحرية 📏", code: "Indentation", desc: "يجب ترك مسافة في بداية الأسطر داخل الدالة ليعرف بايثون أنها تابعة لها.", example: "def hi():\n    print('Hello') # المسافة هي سر الربط" },
+    { title: "النداء السحري 📞", code: "Call", desc: "الدالة لا تعمل وحدها، يجب أن نناديها باسمها لكي تستيقظ.", example: "الكود: hi() # هكذا نوقظ الدالة لتعمل" },
+    { title: "المدخلات (Arguments) 📥", code: "Parameters", desc: "المعلومات داخل الأقواس هي التي نطلبها من المستخدم ليعالجها الروبوت.", example: "الكود: def square(number): (تطلب رقماً لتربعه)" },
+    { title: "الترتيب مهم 🔄", code: "Order", desc: "يجب أن نعطي الدالة المعلومات بنفس الترتيب الذي طلبته بالضبط.", example: "لو طلبت (name, age) أعطها ('Mena', 10) وليس العكس" },
+    { title: "الفواصل المنظمة 📍", code: ",", desc: "نستخدم الفاصلة للفصل بين المعلومات المختلفة داخل الأقواس.", example: "الكود: (name, age, city) # ثلاث معلومات بينها فواصل" },
+    { title: "توفير الوقت ⏳", code: "Reuse", desc: "بدل كتابة كود طويل 10 مرات، نكتب دالة واحدة ونناديها 10 مرات!", example: "نادي دالة happy() لعشرة أصدقاء مختلفين في ثانية واحدة." },
+    { title: "دمج النصوص 🔗", code: "Concatenation", desc: "نستخدم الفاصلة لدمج كلمة ثابتة مع المتغير القادم من الدالة.", example: "الكود: print('my name is', name)" },
+    { title: "الأرقام والنصوص 🔢", code: "Types", desc: "الرقم يدخل الدالة كما هو، أما الكلمات فلابد أن تسجن داخل علامات التنصيص.", example: "الكود: happy('Mena', 35) # نص 'Mena' ورقم 35" },
+    { title: "تجنب الأخطاء ❌", code: "Efficiency", desc: "إذا أردت تغيير جملة، تغيرها داخل الدالة مرة واحدة وتتغير عند الكل.", example: "تغيير 'Hi' إلى 'Hello' في مكان واحد بدلاً من 100 سطر." },
+    { title: "حساسية الحروف 🔠", code: "Case Sensitive", desc: "بايثون يفرق بين الحرف الكبير والصغير، نادِ الدالة بدقة.", example: "دالة Happy() تختلف عن happy() في نظر بايثون." },
+    { title: "المتغيرات المحلية 🏠", code: "Scope", desc: "المتغيرات داخل الدالة تعيش فقط داخل بيتها ولا تخرج لباقي الكود.", example: "لو عرفت x داخل دالة، لن يعرفها بايثون خارجها." },
+    { title: "الطباعة المتعددة 🖨️", code: "Multi-print", desc: "يمكن للدالة الواحدة أن تطبع أسطراً كثيرة جداً بضغطة زر واحدة.", example: "دالة واحدة تطبع (الاسم، ثم السن، ثم المدينة) معاً." },
+    { title: "النظام والجمال ✨", code: "Clean Code", desc: "الدوال تجعل الكود مرتباً وسهلاً في القراءة مثل قصص الأطفال.", example: "كود منظم: [دالة للقفز] [دالة للجري] [دالة للنوم]." },
+    { title: "الذكاء الاصطناعي 🧠", code: "AI", desc: "كل تطبيقات الذكاء الاصطناعي مبنية في الأساس على آلاف الدوال.", example: "دالة تتعرف على الوجوه، ودالة أخرى تترجم الكلام." },
+    { title: "أنت المبرمج القوي! 🚀", code: "Expert", desc: "باستخدام الدوال، أنت الآن تصمم أدواتك الخاصة لخدمة الناس.", example: "مبروك! لقد صنعت أول دالة ذكية خاصة بك اليوم." }
+];
+
+const questions = [
+    { type: 'input', code: 'def hi(): \n  print("Hi")', q: 'ما هي الكلمة التي تبدأ بها أي دالة؟', ans: 'def', hint: 'كلمة من 3 حروف' },
+    { type: 'input', code: 'Happy("Mena", 35)', q: 'كم عدد المدخلات المرسلة لهذه الدالة؟', ans: '2', hint: 'عد الأشياء داخل الأقواس' },
+    { type: 'input', code: 'def play(x):', q: 'ما اسم الرمز ":" الذي يوضع في نهاية السطر الأول؟', ans: 'نقطتان رأسيتان', hint: 'علامة ترقيم' },
+    { type: 'select', code: 'def GO():', q: 'كيف ننادي هذه الدالة بشكل صحيح؟', options: ['GO()', 'go()', 'def GO'], ans: 'GO()', hint: 'الاسم لابد أن يطابق تماماً' },
+    { type: 'select', code: 'print("A", "B")', q: 'ما الرمز الذي يفصل بين المدخلات؟', options: [',', '.', '+'], ans: ',', hint: 'الفاصلة' },
+    { type: 'select', code: 'def test():\nprint("Hi")', q: 'هل الكود السابق صحيح؟', options: ['نعم', 'خطأ بسبب المسافة'], ans: 'خطأ بسبب المسافة', hint: 'انظر لبداية سطر print' },
+    { type: 'select', q: 'هل يمكن للدالة أن تعمل بدون أي مدخلات؟ ()', options: ['صح', 'خطأ'], ans: 'صح', hint: 'الأقواس قد تكون فارغة' },
+    { type: 'select', q: 'هل كلمة "def" اختيارية عند صنع الدالة؟', options: ['صح', 'خطأ'], ans: 'خطأ', hint: 'هي كلمة إجبارية' },
+    { type: 'select', q: 'هل المسافة البادئة (Indentation) ضرورية في بايثون؟', options: ['صح', 'خطأ'], ans: 'صح', hint: 'بايثون يحب النظام' },
+    { type: 'input', code: 'happy("Kero", 14, "elBiadia")', q: 'ما هي المدينة (city) في هذا الاستدعاء؟', ans: 'elBiadia', hint: 'انظر للكلمة الأخيرة' },
+    { type: 'input', code: 'happy("mena", 32, "mallawi")', q: 'ما هو عمر (age) منى؟', ans: '32', hint: 'الرقم الموجود بالمنتصف' },
+    { type: 'select', q: 'ماذا سيحدث لو ناديت دالة غير موجودة؟', options: ['تجاهل', 'خطأ (Error)', 'رسم صورة'], ans: 'خطأ (Error)', hint: 'بايثون لن يعرفها' },
+    { type: 'input', q: 'أكمل الكود لنادي الدالة: hello(...)', ans: '()', hint: 'أضف الأقواس' },
+    { type: 'select', q: 'الكلمة التي تلي "def" مباشرة هي:', options: ['اسم الدالة', 'أمر الطباعة', 'رقم'], ans: 'اسم الدالة', hint: 'مثل اسم الروبوت' },
+    { type: 'select', q: 'أين نكتب الأوامر التي تنفذها الدالة؟', options: ['فوق def', 'تحت def بمسافة', 'في ملف آخر'], ans: 'تحت def بمسافة', hint: 'داخل جسم الدالة' },
+    { type: 'input', code: 'type(happy)', q: 'ما هو نوع هذا الكائن في بايثون؟', ans: 'function', hint: 'دالة بالإنجليزية' },
+    { type: 'select', q: 'هل يمكن تسمية دالة باسم 123؟', options: ['نعم', 'لا'], ans: 'لا', hint: 'الأسماء لا تبدأ بأرقام' },
+    { type: 'input', q: 'ماذا نطبع لندمج "Hi" مع متغير x بمسافة؟', ans: 'print("Hi", x)', hint: 'استخدم الفاصلة' },
+    { type: 'select', q: 'إذا غيرت الكود داخل الدالة، هل يتغير في كل مكان؟', options: ['نعم', 'لا'], ans: 'نعم', hint: 'هذا هو سحر الدوال' },
+    { type: 'input', code: 'def s(a,b): print(a+b)', q: 'ما ناتج s(5,5)؟', ans: '10', hint: 'جمع 5 و 5' },
+    { type: 'select', q: 'هل ترتيب المدخلات مهم عند مناداة الدالة؟', options: ['مهم جداً', 'ليس مهماً'], ans: 'مهم جداً', hint: 'كل معلومة تذهب لمكانها' },
+    { type: 'input', q: 'الرمز المستخدم لتعريف النص هو علامة ...؟', ans: 'التنصيص', hint: 'Quotes' },
+    { type: 'select', q: 'أي سطر هو الصحيح لتعريف دالة؟', options: ['def fun():', 'function fun():', 'def fun:'], ans: 'def fun():', hint: 'تحتاج أقواس ونقطتين' },
+    { type: 'input', q: 'ما ناتج طباعة print(2, 3)؟', ans: '2 3', hint: 'يوجد مسافة بينهما' },
+    { type: 'select', q: 'هل يمكن وضع دالة داخل دالة أخرى؟', options: ['نعم', 'لا'], ans: 'نعم', hint: 'مثل صناديق المفاجآت' },
+    { type: 'input', q: 'كم عدد المرات التي يمكننا فيها مناداة الدالة؟', ans: 'ما لا نهاية', hint: 'عدد غير محدود' },
+    { type: 'select', q: 'اسم الدالة يفضل أن يكون:', options: ['فعل يعبر عن وظيفة', 'أرقام عشوائية'], ans: 'فعل يعبر عن وظيفة', hint: 'مثل walk أو jump' },
+    { type: 'input', q: 'ما هي لغة البرمجة التي نتعلمها الآن؟', ans: 'python', hint: 'تبدأ بحرف p' },
+    { type: 'select', q: 'الروبوت (الدالة) ينفذ الأوامر عندما نـ ...؟', options: ['نحذفه', 'نناديه', 'نغلق الكمبيوتر'], ans: 'نناديه', hint: 'Call' },
+    { type: 'input', q: 'علامة "لا يساوي" في بايثون هي؟', ans: '!=', hint: 'علامة تعجب ويساوي' }
+];
+
+    let currentSlide = 0;
+    let currentQ = 0, score = 0, seconds = 0, timer;
+
+    function showSlide() {
+        const item = detailedExplanation[currentSlide];
+        document.getElementById('slide-content').innerHTML = `
+            <div class="explanation-card">
+                <h3>${item.title}</h3>
+                <div class="code-block">${item.code}</div>
+                <p>${item.desc}</p>
+                <p class="example-text">💡 مثال: ${item.example}</p>
+            </div>
+        `;
+        document.getElementById('slide-num').innerText = `${currentSlide + 1} / ${detailedExplanation.length}`;
+        document.getElementById('prevSlide').disabled = currentSlide === 0;
+        document.getElementById('nextSlide').disabled = currentSlide === detailedExplanation.length - 1;
+    }
+
+    function moveSlide(dir) {
+        currentSlide += dir;
+        showSlide();
+    }
+
+    window.onload = showSlide;
+
+    function initQuiz() {
+        if(!document.getElementById('username').value.trim()) return alert("اكتب اسمك يا بطل أولاً!");
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        loadQuestion();
+        timer = setInterval(() => {
+            seconds++;
+            let m = Math.floor(seconds/60), s = seconds%60;
+            document.getElementById('timer-val').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+        }, 1000);
+    }
+
+    function loadQuestion() {
+        const q = questions[currentQ];
+        document.getElementById('progress-text').innerText = `السؤال ${currentQ + 1} / ${questions.length}`;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('q-code').innerText = q.code || "";
+        document.getElementById('q-code').style.display = q.code ? 'block' : 'none';
+        document.getElementById('hint-box').style.display = 'none';
+        
+        if(q.type === 'select') {
+            document.getElementById('options-container').classList.remove('hidden');
+            document.getElementById('input-container').classList.add('hidden');
+            document.getElementById('options-container').innerHTML = '';
+            q.options.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = 'option-btn' + (q.userAns === opt ? ' selected' : '');
+                b.innerText = opt;
+                b.onclick = () => {
+                    document.querySelectorAll('.option-btn').forEach(x => x.classList.remove('selected'));
+                    b.classList.add('selected');
+                    q.userAns = opt;
+                };
+                document.getElementById('options-container').appendChild(b);
+            });
+        } else {
+            document.getElementById('options-container').classList.add('hidden');
+            document.getElementById('input-container').classList.remove('hidden');
+            document.getElementById('user-code-input').value = q.userAns || '';
+        }
+    }
+
+    function handleStep() {
+        const q = questions[currentQ];
+        const val = q.type === 'select' ? q.userAns : document.getElementById('user-code-input').value.trim();
+        if(!val) return alert("جاوب أولاً يا بطل!");
+
+        if(val.toString().toLowerCase() === q.ans.toLowerCase()) {
+            if(!q.done) { score += 10; q.done = true; document.getElementById('score-val').innerText = score; }
+            if(currentQ < questions.length - 1) { currentQ++; loadQuestion(); } else { finishQuiz(); }
+        } else {
+            document.getElementById('hint-box').style.display = 'block';
+            document.getElementById('hint-text').innerText = q.hint;
+        }
+    }
+
+    function navigate(dir) {
+        if(currentQ + dir >= 0 && currentQ + dir < questions.length) {
+            currentQ += dir;
+            loadQuestion();
+        }
+    }
+
+    function skipQuestion() {
+        if(currentQ < questions.length - 1) {
+            currentQ++;
+            loadQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function revealAnswer() {
+        if(confirm("سيتم خصم 10 نقاط لإظهار الحل، هل أنت موافق؟")) {
+            score -= 10;
+            document.getElementById('score-val').innerText = score;
+            alert("الإجابة الصحيحة هي: " + questions[currentQ].ans);
+        }
+    }
+
+    function finishQuiz() {
+        clearInterval(timer);
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        document.getElementById('congrats-msg').innerText = `عمل رائع يا ${document.getElementById('username').value}! 👑`;
+        document.getElementById('final-stats').innerText = `لقد جمعت ${score} نقطة في زمن ${Math.floor(seconds/60)} دقيقة`;
+    }
+</script>
+</body>
+</html>
