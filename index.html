@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mr Robot Academy - التحدي الذكي</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --primary: #6c5ce7;
@@ -17,9 +20,13 @@
             --radius: 15px;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #1e1b4b, #0f0c29);
+            font-family: "Cairo", sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b, var(--bg));
             color: white;
             min-height: 100vh;
             margin: 0;
@@ -29,37 +36,65 @@
             overflow-x: hidden;
         }
 
-        .header { text-align: center; padding: 25px; width: 100%; }
-        
-        .logo-img { 
-            width: 220px; 
-            height: auto; 
+        button,
+        input {
+            font: inherit;
+        }
+
+        button:focus-visible,
+        input:focus-visible {
+            outline: 3px solid var(--secondary);
+            outline-offset: 3px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 25px 15px;
+            width: 100%;
+        }
+
+        .logo-img {
+            width: 220px;
+            height: auto;
             max-height: 100px;
             object-fit: contain;
             border: 3px solid var(--secondary);
             border-radius: 10px;
             padding: 5px;
-            background: rgba(255,255,255,0.1);
-            box-shadow: 0 0 20px rgba(0,206,201,0.3);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 206, 201, 0.3);
+        }
+
+        .logo-fallback {
+            display: none;
+            width: 220px;
+            margin: 0 auto;
+            padding: 18px 10px;
+            border: 3px solid var(--secondary);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--secondary);
+            font-weight: 900;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(0, 206, 201, 0.3);
         }
 
         .container {
             background: var(--card-bg);
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 25px;
             padding: 25px;
-            width: 90%;
-            max-width: 800px;
+            width: min(90%, 800px);
             margin-bottom: 50px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
 
-        /* --- تحسين قسم الشرح التفاعلي --- */
         .explanation-slider {
             position: relative;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: var(--radius);
             padding: 30px;
             margin: 20px 0;
@@ -71,12 +106,24 @@
             transition: 0.3s;
         }
 
-        .explanation-card h3 { color: var(--secondary); margin-top: 0; font-size: 1.6rem; }
-        .example-text { color: var(--warning); font-style: italic; margin-top: 10px; font-size: 0.95rem; }
-        
+        .explanation-card h3 {
+            color: var(--secondary);
+            margin-top: 0;
+            font-size: 1.6rem;
+        }
+
+        .example-text {
+            color: var(--warning);
+            font-style: italic;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
         .slider-nav {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 15px;
             margin-top: 20px;
         }
@@ -92,45 +139,115 @@
             transition: 0.2s;
         }
 
-        .nav-btn:disabled { background: #444; cursor: not-allowed; }
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
 
-        /* --- بقية العناصر --- */
+        .nav-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
         .code-block {
             background: #1e1e1e;
-            color: #58D68D;
+            color: #58d68d;
             padding: 15px;
-            font-family: 'Fira Code', monospace;
+            font-family: "Fira Code", monospace;
             direction: ltr;
+            text-align: left;
             border-radius: 8px;
             margin: 15px 0;
             font-size: 1.1rem;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
 
         .status-bar {
-            display: flex; justify-content: space-between; background: rgba(0,0,0,0.4);
-            padding: 15px; border-radius: var(--radius); margin-bottom: 20px; font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-weight: bold;
         }
 
         .code-display {
-            background: #000; padding: 25px; border-radius: var(--radius); font-family: 'Fira Code', monospace;
-            direction: ltr; text-align: left; border-left: 5px solid var(--primary); margin-bottom: 20px; font-size: 1.4rem; white-space: pre-wrap;
+            background: #000;
+            padding: 25px;
+            border-radius: var(--radius);
+            font-family: "Fira Code", monospace;
+            direction: ltr;
+            text-align: left;
+            border-left: 5px solid var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
 
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .option-btn {
-            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1);
-            padding: 18px; color: white; cursor: pointer; border-radius: var(--radius); transition: 0.3s;
-            font-size: 1.1rem; font-family: 'Cairo';
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
         }
-        .option-btn:hover { background: var(--primary); transform: scale(1.02); }
-        .option-btn.selected { background: var(--primary); border-color: white; }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 18px;
+            color: white;
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: 0.25s;
+            font-size: 1.1rem;
+            font-family: "Cairo", sans-serif;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .option-btn.selected {
+            background: var(--primary);
+            border-color: white;
+        }
+
+        .option-btn.correct {
+            background: rgba(46, 213, 115, 0.28);
+            border-color: var(--correct);
+        }
+
+        .option-btn.wrong {
+            background: rgba(255, 71, 87, 0.28);
+            border-color: var(--wrong);
+        }
 
         .btn-main {
             background: linear-gradient(to right, var(--primary), #8e44ad);
-            color: white; border: none; padding: 18px 40px;
-            cursor: pointer; font-weight: 900; border-radius: 50px; font-size: 1.3rem;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            cursor: pointer;
+            font-weight: 900;
+            border-radius: 50px;
+            font-size: 1.3rem;
             box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+            transition: transform 0.2s, filter 0.2s;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
         }
 
         .control-group {
@@ -141,300 +258,635 @@
             flex-wrap: wrap;
         }
 
-        .hidden { display: none !important; }
+        .control-btn {
+            padding: 10px 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         input[type="text"] {
-            width: 80%; padding: 15px; background: rgba(0,0,0,0.3); border: 2px solid var(--primary); color: white; border-radius: var(--radius); text-align: center; font-size: 1.2rem;
+            width: min(100%, 580px);
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--primary);
+            color: white;
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        input[type="text"]:disabled {
+            opacity: 0.75;
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .feedback-correct {
+            color: var(--correct);
+            border: 1px solid rgba(46, 213, 115, 0.45);
+        }
+
+        .feedback-wrong {
+            color: var(--warning);
+            border: 1px solid rgba(241, 196, 15, 0.45);
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                width: 94%;
+                padding: 18px;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-bar {
+                font-size: 0.9rem;
+            }
+
+            .code-display {
+                padding: 18px;
+                font-size: 1.05rem;
+            }
+
+            .btn-main {
+                width: 100%;
+            }
+
+            .control-group .option-btn {
+                flex: 1 1 140px;
+            }
         }
     </style>
 </head>
 <body>
+    <header class="header">
+        <img
+            src="logo.png"
+            alt="Mr Robot Logo"
+            class="logo-img"
+            onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';"
+        >
+        <div id="logo-fallback" class="logo-fallback" aria-hidden="true">MR ROBOT</div>
+        <h1 style="margin: 15px 0; font-size: 2.2rem;">Mr Robot Academy</h1>
+        <h6 style="margin: 2px 0; font-size: 1.2rem;">مهندس/ أندرو مجدي - Phone: 01285529570</h6>
+    </header>
 
-<div class="header">
-    <img src="logo.png" alt="Mr Robot Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/220x80/6c5ce7/ffffff?text=MY+LOGO';">
-    <h1 style="margin:15px 0; font-size: 2.2rem;">Mr Robot Academy</h1><br><h6 style="margin:2px 0; font-size: 1.2rem;">مهندس/ أندرو مجدي -  Phone: 01285529570   </h6>
-</div>
+    <main class="container">
+        <section id="start-screen">
+            <h2 style="color: var(--warning);">🚀 رحلة تعلم بايثون الممتعة (فصل الدالة)</h2>
 
-<div class="container">
-    <div id="start-screen">
-        <h2 style="color:var(--warning);">🚀 رحلة تعلم بايثون الممتعة (فصل الدالة)</h2>
-        
-        <div class="explanation-slider">
-            <div id="slide-content"></div>
-            <div class="slider-nav">
-                <button class="nav-btn" onclick="moveSlide(-1)" id="prevSlide">السابق</button>
-                <span id="slide-num" style="align-self:center; font-weight:bold;">1 / 20</span>
-                <button class="nav-btn" onclick="moveSlide(1)" id="nextSlide">التالي</button>
-            </div>
-        </div>
-
-        <div style="margin: 30px 0;">
-            <input type="text" id="username" placeholder="اكتب اسمك يا بطل هنا...">
-        </div>
-        
-        <button class="btn-main" onclick="initQuiz()">ابدأ تحدي الـ 30 سؤال 🎯</button>
-    </div>
-
-    <div id="quiz-screen" class="hidden">
-        <div class="status-bar">
-            <div>⏰ <span id="timer-val">00:00</span></div>
-            <div id="progress-text" style="color:var(--secondary)">السؤال 1 / 30</div>
-            <div>⭐ <span id="score-val">0</span></div>
-        </div>
-        
-        <div class="question-zone">
-            <h3 id="q-text" style="font-size: 1.4rem;"></h3>
-            <div class="code-display" id="q-code"></div>
-            
-            <div id="options-container" class="options-grid"></div>
-            
-            <div id="input-container" class="hidden">
-                <input type="text" id="user-code-input" placeholder="اكتب إجابتك هنا...">
+            <div class="explanation-slider">
+                <div id="slide-content" aria-live="polite"></div>
+                <div class="slider-nav">
+                    <button type="button" class="nav-btn" onclick="moveSlide(-1)" id="prevSlide">السابق</button>
+                    <span id="slide-num" style="font-weight: bold;">1 / 20</span>
+                    <button type="button" class="nav-btn" onclick="moveSlide(1)" id="nextSlide">التالي</button>
+                </div>
             </div>
 
-            <div id="hint-box" style="margin-top:20px; display:none; color:var(--warning); background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
-                💡 تلميحة: <span id="hint-text"></span>
+            <div style="margin: 30px 0;">
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="اكتب اسمك يا بطل هنا..."
+                    maxlength="40"
+                    autocomplete="name"
+                >
             </div>
 
-            <div class="control-group">
-                <button class="option-btn" style="background:#555; padding: 10px 20px;" onclick="navigate(-1)" id="prev-btn">⬅️ السابق</button>
-                <button class="option-btn" style="background:var(--warning); color:#000; padding: 10px 20px;" onclick="skipQuestion()">⏭️ تخطي</button>
-                <button class="option-btn" style="background:var(--wrong); padding: 10px 20px;" onclick="revealAnswer()">🔑 إجابة</button>
-                <button class="btn-main" style="flex-grow:1;" onclick="handleStep()">التحقق من الإجابة ✅</button>
+            <button type="button" class="btn-main" onclick="initQuiz()">ابدأ تحدي الـ 30 سؤال 🎯</button>
+        </section>
+
+        <section id="quiz-screen" class="hidden">
+            <div class="status-bar">
+                <div>⏰ <span id="timer-val">00:00</span></div>
+                <div id="progress-text" style="color: var(--secondary);">السؤال 1 / 30</div>
+                <div>⭐ <span id="score-val">0</span></div>
             </div>
-        </div>
-    </div>
 
-    <div id="result-screen" class="hidden">
-        <h1 style="font-size: 4rem;">🏆</h1>
-        <h2 id="congrats-msg">ممتاز!</h2>
-        <p id="final-stats" style="font-size:1.5rem"></p>
-        <button class="btn-main" onclick="location.reload()">جولة جديدة 🔄</button>
-    </div>
-</div>
+            <div class="question-zone">
+                <h3 id="q-text" style="font-size: 1.4rem;"></h3>
+                <div class="code-display" id="q-code"></div>
 
-<script>
-const detailedExplanation = [
-    { title: "الروبوت المطيع 🤖", code: "def", desc: "الدالة هي روبوت صغير نبرمجه مرة واحدة ونناديه كلما احتجنا إليه.", example: "تخيل روبوت اسمه greet، وظيفته فقط أن يقول 'أهلاً'." },
-    { title: "كلمة السر ✨", code: "def", desc: "لابد أن نبدأ بكلمة def لنخبر بايثون أننا نصنع دالة جديدة.", example: "الكود: def my_robot():" },
-    { title: "تسمية الروبوت 🏷️", code: "Name", desc: "نختار اسماً للدالة يعبر عن وظيفتها، ويفضل أن يكون بسيطاً.", example: "مثال: def jump(): (دالة تجعل الشخصية تقفز)" },
-    { title: "شنطة المعلومات 🎒", code: "()", desc: "الأقواس هي مثل الشنطة التي نضع فيها الأشياء التي سيعمل عليها الروبوت.", example: "الكود: def eat(food): (الشنطة تنتظر وضع الطعام)" },
-    { title: "إشارة البدء 🚦", code: ":", desc: "النقطتان الرأسيتان تعني: انتبه يا بايثون، سأبدأ بكتابة الأوامر الآن!", example: "الكود: def start(): (لا تنسَ النقطتين في النهاية)" },
-    { title: "المسافة السحرية 📏", code: "Indentation", desc: "يجب ترك مسافة في بداية الأسطر داخل الدالة ليعرف بايثون أنها تابعة لها.", example: "def hi():\n    print('Hello') # المسافة هي سر الربط" },
-    { title: "النداء السحري 📞", code: "Call", desc: "الدالة لا تعمل وحدها، يجب أن نناديها باسمها لكي تستيقظ.", example: "الكود: hi() # هكذا نوقظ الدالة لتعمل" },
-    { title: "المدخلات (Arguments) 📥", code: "Parameters", desc: "المعلومات داخل الأقواس هي التي نطلبها من المستخدم ليعالجها الروبوت.", example: "الكود: def square(number): (تطلب رقماً لتربعه)" },
-    { title: "الترتيب مهم 🔄", code: "Order", desc: "يجب أن نعطي الدالة المعلومات بنفس الترتيب الذي طلبته بالضبط.", example: "لو طلبت (name, age) أعطها ('Mena', 10) وليس العكس" },
-    { title: "الفواصل المنظمة 📍", code: ",", desc: "نستخدم الفاصلة للفصل بين المعلومات المختلفة داخل الأقواس.", example: "الكود: (name, age, city) # ثلاث معلومات بينها فواصل" },
-    { title: "توفير الوقت ⏳", code: "Reuse", desc: "بدل كتابة كود طويل 10 مرات، نكتب دالة واحدة ونناديها 10 مرات!", example: "نادي دالة happy() لعشرة أصدقاء مختلفين في ثانية واحدة." },
-    { title: "دمج النصوص 🔗", code: "Concatenation", desc: "نستخدم الفاصلة لدمج كلمة ثابتة مع المتغير القادم من الدالة.", example: "الكود: print('my name is', name)" },
-    { title: "الأرقام والنصوص 🔢", code: "Types", desc: "الرقم يدخل الدالة كما هو، أما الكلمات فلابد أن تسجن داخل علامات التنصيص.", example: "الكود: happy('Mena', 35) # نص 'Mena' ورقم 35" },
-    { title: "تجنب الأخطاء ❌", code: "Efficiency", desc: "إذا أردت تغيير جملة، تغيرها داخل الدالة مرة واحدة وتتغير عند الكل.", example: "تغيير 'Hi' إلى 'Hello' في مكان واحد بدلاً من 100 سطر." },
-    { title: "حساسية الحروف 🔠", code: "Case Sensitive", desc: "بايثون يفرق بين الحرف الكبير والصغير، نادِ الدالة بدقة.", example: "دالة Happy() تختلف عن happy() في نظر بايثون." },
-    { title: "المتغيرات المحلية 🏠", code: "Scope", desc: "المتغيرات داخل الدالة تعيش فقط داخل بيتها ولا تخرج لباقي الكود.", example: "لو عرفت x داخل دالة، لن يعرفها بايثون خارجها." },
-    { title: "الطباعة المتعددة 🖨️", code: "Multi-print", desc: "يمكن للدالة الواحدة أن تطبع أسطراً كثيرة جداً بضغطة زر واحدة.", example: "دالة واحدة تطبع (الاسم، ثم السن، ثم المدينة) معاً." },
-    { title: "النظام والجمال ✨", code: "Clean Code", desc: "الدوال تجعل الكود مرتباً وسهلاً في القراءة مثل قصص الأطفال.", example: "كود منظم: [دالة للقفز] [دالة للجري] [دالة للنوم]." },
-    { title: "الذكاء الاصطناعي 🧠", code: "AI", desc: "كل تطبيقات الذكاء الاصطناعي مبنية في الأساس على آلاف الدوال.", example: "دالة تتعرف على الوجوه، ودالة أخرى تترجم الكلام." },
-    { title: "أنت المبرمج القوي! 🚀", code: "Expert", desc: "باستخدام الدوال، أنت الآن تصمم أدواتك الخاصة لخدمة الناس.", example: "مبروك! لقد صنعت أول دالة ذكية خاصة بك اليوم." }
-];
+                <div id="options-container" class="options-grid"></div>
 
-const questions = [
-    { type: 'input', code: 'def hi(): \n  print("Hi")', q: 'ما هي الكلمة التي تبدأ بها أي دالة؟', ans: 'def', hint: 'كلمة من 3 حروف' },
-    { type: 'input', code: 'Happy("Mena", 35)', q: 'كم عدد المدخلات المرسلة لهذه الدالة؟', ans: '2', hint: 'عد الأشياء داخل الأقواس' },
-    { type: 'input', code: 'def play(x):', q: 'ما اسم الرمز ":" الذي يوضع في نهاية السطر الأول؟', ans: 'نقطتان رأسيتان', hint: 'علامة ترقيم' },
-    { type: 'select', code: 'def GO():', q: 'كيف ننادي هذه الدالة بشكل صحيح؟', options: ['GO()', 'go()', 'def GO'], ans: 'GO()', hint: 'الاسم لابد أن يطابق تماماً' },
-    { type: 'select', code: 'print("A", "B")', q: 'ما الرمز الذي يفصل بين المدخلات؟', options: [',', '.', '+'], ans: ',', hint: 'الفاصلة' },
-    { type: 'select', code: 'def test():\nprint("Hi")', q: 'هل الكود السابق صحيح؟', options: ['نعم', 'خطأ بسبب المسافة'], ans: 'خطأ بسبب المسافة', hint: 'انظر لبداية سطر print' },
-    { type: 'select', q: 'هل يمكن للدالة أن تعمل بدون أي مدخلات؟ ()', options: ['صح', 'خطأ'], ans: 'صح', hint: 'الأقواس قد تكون فارغة' },
-    { type: 'select', q: 'هل كلمة "def" اختيارية عند صنع الدالة؟', options: ['صح', 'خطأ'], ans: 'خطأ', hint: 'هي كلمة إجبارية' },
-    { type: 'select', q: 'هل المسافة البادئة (Indentation) ضرورية في بايثون؟', options: ['صح', 'خطأ'], ans: 'صح', hint: 'بايثون يحب النظام' },
-    { type: 'input', code: 'happy("Kero", 14, "elBiadia")', q: 'ما هي المدينة (city) في هذا الاستدعاء؟', ans: 'elBiadia', hint: 'انظر للكلمة الأخيرة' },
-    { type: 'input', code: 'happy("mena", 32, "mallawi")', q: 'ما هو عمر (age) منى؟', ans: '32', hint: 'الرقم الموجود بالمنتصف' },
-    { type: 'select', q: 'ماذا سيحدث لو ناديت دالة غير موجودة؟', options: ['تجاهل', 'خطأ (Error)', 'رسم صورة'], ans: 'خطأ (Error)', hint: 'بايثون لن يعرفها' },
-    { type: 'input', q: 'أكمل الكود لنادي الدالة: hello(...)', ans: '()', hint: 'أضف الأقواس' },
-    { type: 'select', q: 'الكلمة التي تلي "def" مباشرة هي:', options: ['اسم الدالة', 'أمر الطباعة', 'رقم'], ans: 'اسم الدالة', hint: 'مثل اسم الروبوت' },
-    { type: 'select', q: 'أين نكتب الأوامر التي تنفذها الدالة؟', options: ['فوق def', 'تحت def بمسافة', 'في ملف آخر'], ans: 'تحت def بمسافة', hint: 'داخل جسم الدالة' },
-    { type: 'input', code: 'type(happy)', q: 'ما هو نوع هذا الكائن في بايثون؟', ans: 'function', hint: 'دالة بالإنجليزية' },
-    { type: 'select', q: 'هل يمكن تسمية دالة باسم 123؟', options: ['نعم', 'لا'], ans: 'لا', hint: 'الأسماء لا تبدأ بأرقام' },
-    { type: 'input', q: 'ماذا نطبع لندمج "Hi" مع متغير x بمسافة؟', ans: 'print("Hi", x)', hint: 'استخدم الفاصلة' },
-    { type: 'select', q: 'إذا غيرت الكود داخل الدالة، هل يتغير في كل مكان؟', options: ['نعم', 'لا'], ans: 'نعم', hint: 'هذا هو سحر الدوال' },
-    { type: 'input', code: 'def s(a,b): print(a+b)', q: 'ما ناتج s(5,5)؟', ans: '10', hint: 'جمع 5 و 5' },
-    { type: 'select', q: 'هل ترتيب المدخلات مهم عند مناداة الدالة؟', options: ['مهم جداً', 'ليس مهماً'], ans: 'مهم جداً', hint: 'كل معلومة تذهب لمكانها' },
-    { type: 'input', q: 'الرمز المستخدم لتعريف النص هو علامة ...؟', ans: 'التنصيص', hint: 'Quotes' },
-    { type: 'select', q: 'أي سطر هو الصحيح لتعريف دالة؟', options: ['def fun():', 'function fun():', 'def fun:'], ans: 'def fun():', hint: 'تحتاج أقواس ونقطتين' },
-    { type: 'input', q: 'ما ناتج طباعة print(2, 3)؟', ans: '2 3', hint: 'يوجد مسافة بينهما' },
-    { type: 'select', q: 'هل يمكن وضع دالة داخل دالة أخرى؟', options: ['نعم', 'لا'], ans: 'نعم', hint: 'مثل صناديق المفاجآت' },
-    { type: 'input', q: 'كم عدد المرات التي يمكننا فيها مناداة الدالة؟', ans: 'ما لا نهاية', hint: 'عدد غير محدود' },
-    { type: 'select', q: 'اسم الدالة يفضل أن يكون:', options: ['فعل يعبر عن وظيفة', 'أرقام عشوائية'], ans: 'فعل يعبر عن وظيفة', hint: 'مثل walk أو jump' },
-    { type: 'input', q: 'ما هي لغة البرمجة التي نتعلمها الآن؟', ans: 'python', hint: 'تبدأ بحرف p' },
-    { type: 'select', q: 'الروبوت (الدالة) ينفذ الأوامر عندما نـ ...؟', options: ['نحذفه', 'نناديه', 'نغلق الكمبيوتر'], ans: 'نناديه', hint: 'Call' },
-    { type: 'input', q: 'علامة "لا يساوي" في بايثون هي؟', ans: '!=', hint: 'علامة تعجب ويساوي' }
-];
-let currentSlide = 0;
-    let currentQ = 0, score = 0, seconds = 0, timer;
+                <div id="input-container" class="hidden">
+                    <input type="text" id="user-code-input" placeholder="اكتب إجابتك هنا..." autocomplete="off">
+                </div>
 
-    // وظائف السلايدر
-    function showSlide() {
-        const item = detailedExplanation[currentSlide];
-        document.getElementById('slide-content').innerHTML = `
-            <div class="explanation-card">
-                <h3>${item.title}</h3>
-                <div class="code-block">${item.code}</div>
-                <p>${item.desc}</p>
+                <div id="feedback-box" class="feedback-box hidden" aria-live="polite">
+                    <span id="feedback-text"></span>
+                </div>
+
+                <div class="control-group">
+                    <button
+                        type="button"
+                        class="option-btn control-btn"
+                        style="background: #555;"
+                        onclick="navigate(-1)"
+                        id="prev-btn"
+                    >⬅️ السابق</button>
+
+                    <button
+                        type="button"
+                        class="option-btn control-btn"
+                        style="background: var(--warning); color: #000;"
+                        onclick="skipQuestion()"
+                        id="skip-btn"
+                    >⏭️ تخطي</button>
+
+                    <button
+                        type="button"
+                        class="option-btn control-btn"
+                        style="background: var(--wrong);"
+                        onclick="revealAnswer()"
+                        id="reveal-btn"
+                    >🔑 إجابة</button>
+
+                    <button
+                        type="button"
+                        class="btn-main"
+                        style="flex-grow: 1;"
+                        onclick="handleStep()"
+                        id="check-btn"
+                    >التحقق من الإجابة ✅</button>
+                </div>
             </div>
-        `;
-        document.getElementById('slide-num').innerText = `${currentSlide + 1} / ${detailedExplanation.length}`;
-        document.getElementById('prevSlide').disabled = currentSlide === 0;
-        document.getElementById('nextSlide').disabled = currentSlide === detailedExplanation.length - 1;
-    }
+        </section>
 
-    function moveSlide(dir) {
-        const nextSlide = currentSlide + dir;
-        if (nextSlide < 0 || nextSlide >= detailedExplanation.length) return;
-        currentSlide = nextSlide;
-        showSlide();
-    }
+        <section id="result-screen" class="hidden">
+            <h1 style="font-size: 4rem;">🏆</h1>
+            <h2 id="congrats-msg">ممتاز!</h2>
+            <p id="final-stats" style="font-size: 1.5rem;"></p>
+            <button type="button" class="btn-main" onclick="location.reload()">جولة جديدة 🔄</button>
+        </section>
+    </main>
 
-    window.onload = showSlide;
+    <script>
+        "use strict";
 
-    // وظائف الاختبار
-    function initQuiz() {
-        if(!document.getElementById('username').value.trim()) return alert("اكتب اسمك يا بطل أولاً!");
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.remove('hidden');
-        loadQuestion();
-        timer = setInterval(() => {
-            seconds++;
-            document.getElementById('timer-val').innerText = formatTime(seconds);
-        }, 1000);
-    }
+        const detailedExplanation = [
+            { title: "الروبوت المطيع 🤖", code: "def", desc: "الدالة هي روبوت صغير نبرمجه مرة واحدة ونناديه كلما احتجنا إليه.", example: "تخيل روبوت اسمه greet، وظيفته فقط أن يقول 'أهلاً'." },
+            { title: "كلمة السر ✨", code: "def", desc: "لابد أن نبدأ بكلمة def لنخبر بايثون أننا نصنع دالة جديدة.", example: "الكود: def my_robot():" },
+            { title: "تسمية الروبوت 🏷️", code: "Name", desc: "نختار اسماً للدالة يعبر عن وظيفتها، ويفضل أن يكون بسيطاً.", example: "مثال: def jump(): (دالة تجعل الشخصية تقفز)" },
+            { title: "شنطة المعلومات 🎒", code: "()", desc: "الأقواس هي مثل الشنطة التي نضع فيها الأشياء التي سيعمل عليها الروبوت.", example: "الكود: def eat(food): (الشنطة تنتظر وضع الطعام)" },
+            { title: "إشارة البدء 🚦", code: ":", desc: "النقطتان الرأسيتان تعنيان: انتبه يا بايثون، سأبدأ بكتابة الأوامر الآن!", example: "الكود: def start(): (لا تنسَ النقطتين في النهاية)" },
+            { title: "المسافة السحرية 📏", code: "Indentation", desc: "يجب ترك مسافة في بداية الأسطر داخل الدالة ليعرف بايثون أنها تابعة لها.", example: "def hi():\n    print('Hello')  # المسافة هي سر الربط" },
+            { title: "النداء السحري 📞", code: "Call", desc: "الدالة لا تعمل وحدها، يجب أن نناديها باسمها لكي تستيقظ.", example: "الكود: hi()  # هكذا نوقظ الدالة لتعمل" },
+            { title: "المدخلات (Arguments) 📥", code: "Parameters", desc: "المعلومات داخل الأقواس هي التي نطلبها ليعالجها الروبوت.", example: "الكود: def square(number): (تطلب رقماً لتربعه)" },
+            { title: "الترتيب مهم 🔄", code: "Order", desc: "يجب أن نعطي الدالة المعلومات بنفس الترتيب الذي طلبته بالضبط.", example: "لو طلبت (name, age) أعطها ('Mena', 10) وليس العكس" },
+            { title: "الفواصل المنظمة 📍", code: ",", desc: "نستخدم الفاصلة للفصل بين المعلومات المختلفة داخل الأقواس.", example: "الكود: (name, age, city)  # ثلاث معلومات بينها فواصل" },
+            { title: "توفير الوقت ⏳", code: "Reuse", desc: "بدل كتابة كود طويل 10 مرات، نكتب دالة واحدة ونناديها 10 مرات!", example: "نادِ دالة happy() لعشرة أصدقاء مختلفين في ثانية واحدة." },
+            { title: "دمج النصوص 🔗", code: "Concatenation", desc: "يمكن استخدام الفاصلة لطباعة كلمة ثابتة مع متغير قادم إلى الدالة.", example: "الكود: print('my name is', name)" },
+            { title: "الأرقام والنصوص 🔢", code: "Types", desc: "الرقم يدخل الدالة كما هو، أما الكلمات فلابد أن توضع داخل علامات التنصيص.", example: "الكود: happy('Mena', 35)  # نص 'Mena' ورقم 35" },
+            { title: "تجنب الأخطاء ❌", code: "Efficiency", desc: "إذا أردت تغيير جملة، تغيرها داخل الدالة مرة واحدة فتتغير في كل الاستدعاءات.", example: "تغيير 'Hi' إلى 'Hello' في مكان واحد بدلاً من 100 سطر." },
+            { title: "حساسية الحروف 🔠", code: "Case Sensitive", desc: "بايثون يفرق بين الحرف الكبير والصغير، لذلك نادِ الدالة بدقة.", example: "الدالة Happy() تختلف عن happy() في نظر بايثون." },
+            { title: "المتغيرات المحلية 🏠", code: "Scope", desc: "المتغيرات داخل الدالة تعيش غالباً داخل نطاقها ولا يمكن استعمالها خارجه مباشرة.", example: "لو عرّفت x داخل دالة، فلن تكون متاحة خارجها تلقائياً." },
+            { title: "الطباعة المتعددة 🖨️", code: "Multi-print", desc: "يمكن للدالة الواحدة أن تنفذ أوامر طباعة متعددة باستدعاء واحد.", example: "دالة واحدة تطبع الاسم، ثم السن، ثم المدينة." },
+            { title: "النظام والجمال ✨", code: "Clean Code", desc: "الدوال تجعل الكود مرتباً وأسهل في القراءة والصيانة.", example: "كود منظم: [دالة للقفز] [دالة للجري] [دالة للنوم]." },
+            { title: "الذكاء الاصطناعي 🧠", code: "AI", desc: "تُستخدم الدوال بكثرة في بناء برامج الذكاء الاصطناعي وغيرها من التطبيقات.", example: "دالة لمعالجة صورة، ودالة أخرى لتحليل النص." },
+            { title: "أنت المبرمج القوي! 🚀", code: "Expert", desc: "باستخدام الدوال، تستطيع تصميم أدوات قابلة لإعادة الاستخدام داخل برامجك.", example: "مبروك! لقد تعلمت أساسيات إنشاء الدوال واستدعائها." }
+        ];
 
-    function formatTime(totalSeconds) {
-        const minutes = Math.floor(totalSeconds / 60);
-        const remainingSeconds = totalSeconds % 60;
-        return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-    }
+        const questions = [
+            { type: "input", code: "def hi():\n    print(\"Hi\")", q: "ما هي الكلمة التي تبدأ بها أي دالة؟", ans: "def", hint: "كلمة من 3 حروف" },
+            { type: "input", code: "Happy(\"Mena\", 35)", q: "كم عدد المدخلات المرسلة لهذه الدالة؟", ans: "2", hint: "عد الأشياء داخل الأقواس" },
+            { type: "input", code: "def play(x):", q: "ما اسم الرمز ':' الذي يوضع في نهاية السطر الأول؟", ans: ["نقطتان رأسيتان", "نقطتين رأسيتين", ":"], hint: "علامة ترقيم" },
+            { type: "select", code: "def GO():", q: "كيف ننادي هذه الدالة بشكل صحيح؟", options: ["GO()", "go()", "def GO"], ans: "GO()", hint: "الاسم لابد أن يطابق تماماً" },
+            { type: "select", code: "print(\"A\", \"B\")", q: "ما الرمز الذي يفصل بين المدخلات؟", options: [",", ".", "+"], ans: ",", hint: "الفاصلة" },
+            { type: "select", code: "def test():\nprint(\"Hi\")", q: "هل الكود السابق صحيح؟", options: ["نعم", "خطأ بسبب المسافة"], ans: "خطأ بسبب المسافة", hint: "انظر لبداية سطر print" },
+            { type: "select", q: "هل يمكن للدالة أن تعمل بدون أي مدخلات؟ ()", options: ["صح", "خطأ"], ans: "صح", hint: "الأقواس قد تكون فارغة" },
+            { type: "select", q: "هل كلمة 'def' اختيارية عند صنع الدالة؟", options: ["صح", "خطأ"], ans: "خطأ", hint: "هي كلمة إجبارية" },
+            { type: "select", q: "هل المسافة البادئة (Indentation) ضرورية في بايثون؟", options: ["صح", "خطأ"], ans: "صح", hint: "بايثون يحب النظام" },
+            { type: "input", code: "happy(\"Kero\", 14, \"elBiadia\")", q: "ما هي المدينة (city) في هذا الاستدعاء؟", ans: "elBiadia", hint: "انظر للكلمة الأخيرة" },
+            { type: "input", code: "happy(\"mena\", 32, \"mallawi\")", q: "ما هو عمر (age) منى؟", ans: "32", hint: "الرقم الموجود بالمنتصف" },
+            { type: "select", q: "ماذا سيحدث لو ناديت دالة غير موجودة؟", options: ["تجاهل", "خطأ (Error)", "رسم صورة"], ans: "خطأ (Error)", hint: "بايثون لن يعرفها" },
+            { type: "input", q: "أكمل الكود لننادي الدالة: hello...", ans: ["()", "hello()"], hint: "أضف الأقواس" },
+            { type: "select", q: "الكلمة التي تلي 'def' مباشرة هي:", options: ["اسم الدالة", "أمر الطباعة", "رقم"], ans: "اسم الدالة", hint: "مثل اسم الروبوت" },
+            { type: "select", q: "أين نكتب الأوامر التي تنفذها الدالة؟", options: ["فوق def", "تحت def بمسافة", "في ملف آخر"], ans: "تحت def بمسافة", hint: "داخل جسم الدالة" },
+            { type: "input", code: "type(happy)", q: "ما هو نوع هذا الكائن في بايثون؟", ans: ["function", "<class 'function'>", "<class \"function\">"], hint: "دالة بالإنجليزية" },
+            { type: "select", q: "هل يمكن تسمية دالة باسم 123؟", options: ["نعم", "لا"], ans: "لا", hint: "الأسماء لا تبدأ بأرقام" },
+            { type: "input", q: "ماذا نكتب لطباعة 'Hi' مع المتغير x وبينهما مسافة؟", ans: ["print(\"Hi\", x)", "print('Hi', x)", "print(\"Hi\",x)", "print('Hi',x)"], hint: "استخدم الفاصلة" },
+            { type: "select", q: "إذا غيرت الكود داخل الدالة، هل يؤثر ذلك في كل استدعاء لها؟", options: ["نعم", "لا"], ans: "نعم", hint: "هذا هو سحر الدوال" },
+            { type: "input", code: "def s(a, b):\n    print(a + b)", q: "ما ناتج s(5, 5)؟", ans: "10", hint: "جمع 5 و5" },
+            { type: "select", q: "هل ترتيب المدخلات مهم عند مناداة الدالة؟", options: ["مهم جداً", "ليس مهماً"], ans: "مهم جداً", hint: "كل معلومة تذهب لمكانها" },
+            { type: "input", q: "الرمز المستخدم لتعريف النص هو علامة ...؟", ans: ["التنصيص", "علامات التنصيص", "quotes", "quote"], hint: "Quotes" },
+            { type: "select", q: "أي سطر هو الصحيح لتعريف دالة؟", options: ["def fun():", "function fun():", "def fun:"], ans: "def fun():", hint: "تحتاج أقواساً ونقطتين" },
+            { type: "input", q: "ما ناتج طباعة print(2, 3)؟", ans: "2 3", hint: "يوجد فراغ بينهما" },
+            { type: "select", q: "هل يمكن وضع دالة داخل دالة أخرى؟", options: ["نعم", "لا"], ans: "نعم", hint: "تسمى دالة متداخلة" },
+            { type: "input", q: "كم عدد المرات التي يمكننا فيها مناداة الدالة؟", ans: ["ما لا نهاية", "عدد غير محدود", "غير محدود", "لا نهائي"], hint: "عدد غير محدود" },
+            { type: "select", q: "اسم الدالة يفضل أن يكون:", options: ["فعلاً يعبر عن وظيفتها", "أرقاماً عشوائية"], ans: "فعلاً يعبر عن وظيفتها", hint: "مثل walk أو jump" },
+            { type: "input", q: "ما هي لغة البرمجة التي نتعلمها الآن؟", ans: ["python", "بايثون"], hint: "تبدأ بحرف p" },
+            { type: "select", q: "الروبوت (الدالة) ينفذ الأوامر عندما نـ...؟", options: ["نحذفه", "نناديه", "نغلق الكمبيوتر"], ans: "نناديه", hint: "Call" },
+            { type: "input", q: "علامة 'لا يساوي' في بايثون هي؟", ans: "!=", hint: "علامة تعجب ويساوي" }
+        ];
 
-    function saveCurrentAnswer() {
-        const q = questions[currentQ];
-        if (q.type === 'input') {
-            q.userAns = document.getElementById('user-code-input').value.trim();
+        let currentSlide = 0;
+        let currentQ = 0;
+        let score = 0;
+        let seconds = 0;
+        let timer = null;
+        let playerName = "";
+
+        const questionState = questions.map(() => ({
+            answer: "",
+            status: "unanswered", // unanswered | correct | wrong | revealed
+            scored: false
+        }));
+
+        function renderSlide() {
+            const slide = detailedExplanation[currentSlide];
+            const slideContent = document.getElementById("slide-content");
+
+            slideContent.innerHTML = "";
+
+            const card = document.createElement("div");
+            card.className = "explanation-card";
+
+            const title = document.createElement("h3");
+            title.textContent = slide.title;
+
+            const code = document.createElement("div");
+            code.className = "code-block";
+            code.textContent = slide.code;
+
+            const description = document.createElement("p");
+            description.textContent = slide.desc;
+
+            const example = document.createElement("p");
+            example.className = "example-text";
+            example.textContent = slide.example;
+
+            card.append(title, code, description, example);
+            slideContent.appendChild(card);
+
+            document.getElementById("slide-num").textContent =
+                `${currentSlide + 1} / ${detailedExplanation.length}`;
+
+            document.getElementById("prevSlide").disabled = currentSlide === 0;
+            document.getElementById("nextSlide").disabled =
+                currentSlide === detailedExplanation.length - 1;
         }
-    }
 
-    function loadQuestion() {
-        const q = questions[currentQ];
-        document.getElementById('progress-text').innerText = `السؤال ${currentQ + 1} / ${questions.length}`;
-        document.getElementById('q-text').innerText = q.q;
-        document.getElementById('q-code').innerText = q.code;
-        document.getElementById('hint-box').style.display = 'none';
-        document.getElementById('prev-btn').disabled = currentQ === 0;
+        function moveSlide(direction) {
+            const nextSlide = currentSlide + direction;
 
-        const nextBtn = document.getElementById('next-btn');
-        nextBtn.innerText = currentQ === questions.length - 1 ? 'إنهاء الاختبار 🏁' : 'التالي ➡️';
-        
-        if(q.type === 'select') {
-            document.getElementById('options-container').classList.remove('hidden');
-            document.getElementById('input-container').classList.add('hidden');
-            document.getElementById('options-container').innerHTML = '';
-            q.options.forEach(opt => {
-                const b = document.createElement('button');
-                b.className = 'option-btn' + (q.userAns === opt ? ' selected' : '');
-                b.innerText = opt;
-                b.onclick = () => {
-                    document.querySelectorAll('#options-container .option-btn').forEach(x => x.classList.remove('selected'));
-                    b.classList.add('selected');
-                    q.userAns = opt;
-                };
-                document.getElementById('options-container').appendChild(b);
-            });
-        } else {
-            document.getElementById('options-container').classList.add('hidden');
-            document.getElementById('input-container').classList.remove('hidden');
-            const input = document.getElementById('user-code-input');
-            input.value = q.userAns || '';
-            input.oninput = () => { q.userAns = input.value.trim(); };
-        }
-    }
-
-    function normalizeAnswer(value) {
-        return String(value ?? '').trim().toLowerCase();
-    }
-
-    function handleStep() {
-        saveCurrentAnswer();
-        const q = questions[currentQ];
-        const val = q.userAns;
-        if(!normalizeAnswer(val)) return alert("جاوب أولاً يا بطل!");
-
-        if(normalizeAnswer(val) === normalizeAnswer(q.ans)) {
-            if(!q.done) {
-                q.done = true;
-                if(!q.revealed) score += 10;
-                document.getElementById('score-val').innerText = score;
+            if (nextSlide < 0 || nextSlide >= detailedExplanation.length) {
+                return;
             }
-            if(currentQ < questions.length - 1) {
-                currentQ++;
+
+            currentSlide = nextSlide;
+            renderSlide();
+        }
+
+        function initQuiz() {
+            const usernameInput = document.getElementById("username");
+            playerName = usernameInput.value.trim();
+
+            if (!playerName) {
+                alert("اكتب اسمك أولاً يا بطل");
+                usernameInput.focus();
+                return;
+            }
+
+            currentQ = 0;
+            score = 0;
+            seconds = 0;
+
+            questionState.forEach((state) => {
+                state.answer = "";
+                state.status = "unanswered";
+                state.scored = false;
+            });
+
+            document.getElementById("score-val").textContent = "0";
+            document.getElementById("timer-val").textContent = "00:00";
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("result-screen").classList.add("hidden");
+            document.getElementById("quiz-screen").classList.remove("hidden");
+
+            clearInterval(timer);
+            timer = setInterval(() => {
+                seconds += 1;
+                document.getElementById("timer-val").textContent = formatTime(seconds);
+            }, 1000);
+
+            loadQuestion();
+        }
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const remainingSeconds = totalSeconds % 60;
+
+            return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+        }
+
+        function normalizeAnswer(value) {
+            return String(value ?? "")
+                .trim()
+                .toLowerCase()
+                .replace(/[“”]/g, '"')
+                .replace(/[‘’]/g, "'")
+                .replace(/[أإآ]/g, "ا")
+                .replace(/ى/g, "ي")
+                .replace(/ة/g, "ه")
+                .replace(/\s+/g, " ");
+        }
+
+        function isAnswerCorrect(userAnswer, expectedAnswer) {
+            const acceptedAnswers = Array.isArray(expectedAnswer)
+                ? expectedAnswer
+                : [expectedAnswer];
+
+            const normalizedUserAnswer = normalizeAnswer(userAnswer);
+
+            return acceptedAnswers.some((answer) =>
+                normalizeAnswer(answer) === normalizedUserAnswer
+            );
+        }
+
+        function getPrimaryAnswer(question) {
+            return Array.isArray(question.ans) ? question.ans[0] : question.ans;
+        }
+
+        function loadQuestion() {
+            const question = questions[currentQ];
+            const state = questionState[currentQ];
+            const isAnswered = state.status !== "unanswered";
+
+            document.getElementById("progress-text").textContent =
+                `السؤال ${currentQ + 1} / ${questions.length}`;
+            document.getElementById("q-text").textContent = question.q;
+
+            const codeElement = document.getElementById("q-code");
+            codeElement.textContent = question.code || "";
+            codeElement.style.display = question.code ? "block" : "none";
+
+            document.getElementById("prev-btn").disabled = currentQ === 0;
+            document.getElementById("skip-btn").disabled = isAnswered;
+            document.getElementById("reveal-btn").disabled = isAnswered;
+            document.getElementById("check-btn").textContent = isAnswered
+                ? (currentQ === questions.length - 1 ? "عرض النتيجة 🏆" : "السؤال التالي ➡️")
+                : "التحقق من الإجابة ✅";
+
+            renderFeedback(question, state);
+
+            if (question.type === "select") {
+                renderSelectQuestion(question, state);
+            } else {
+                renderInputQuestion(state);
+            }
+        }
+
+        function renderSelectQuestion(question, state) {
+            const optionsContainer = document.getElementById("options-container");
+            const inputContainer = document.getElementById("input-container");
+            const isAnswered = state.status !== "unanswered";
+
+            optionsContainer.classList.remove("hidden");
+            inputContainer.classList.add("hidden");
+            optionsContainer.innerHTML = "";
+
+            question.options.forEach((option) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "option-btn";
+                button.textContent = option;
+                button.disabled = isAnswered;
+
+                if (state.answer === option) {
+                    button.classList.add("selected");
+                }
+
+                if (isAnswered && isAnswerCorrect(option, question.ans)) {
+                    button.classList.add("correct");
+                }
+
+                if (
+                    isAnswered &&
+                    state.answer === option &&
+                    !isAnswerCorrect(option, question.ans)
+                ) {
+                    button.classList.add("wrong");
+                }
+
+                button.addEventListener("click", () => {
+                    if (state.status !== "unanswered") {
+                        return;
+                    }
+
+                    state.answer = option;
+                    checkAnswer(option);
+                });
+
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function renderInputQuestion(state) {
+            const optionsContainer = document.getElementById("options-container");
+            const inputContainer = document.getElementById("input-container");
+            const input = document.getElementById("user-code-input");
+            const isAnswered = state.status !== "unanswered";
+
+            optionsContainer.classList.add("hidden");
+            inputContainer.classList.remove("hidden");
+
+            input.value = state.answer;
+            input.disabled = isAnswered;
+
+            if (!isAnswered) {
+                requestAnimationFrame(() => input.focus());
+            }
+        }
+
+        function renderFeedback(question, state) {
+            const box = document.getElementById("feedback-box");
+            const text = document.getElementById("feedback-text");
+
+            box.classList.remove("feedback-correct", "feedback-wrong");
+
+            if (state.status === "unanswered") {
+                box.classList.add("hidden");
+                text.textContent = "";
+                return;
+            }
+
+            box.classList.remove("hidden");
+
+            if (state.status === "correct") {
+                box.classList.add("feedback-correct");
+                text.textContent = "✅ إجابة صحيحة، أحسنت!";
+                return;
+            }
+
+            box.classList.add("feedback-wrong");
+
+            if (state.status === "revealed") {
+                text.textContent = `🔑 الإجابة الصحيحة: ${getPrimaryAnswer(question)}`;
+            } else {
+                text.textContent =
+                    `💡 ${question.hint || "راجع إجابتك"} — الإجابة الصحيحة: ${getPrimaryAnswer(question)}`;
+            }
+        }
+
+        function checkAnswer(value) {
+            const question = questions[currentQ];
+            const state = questionState[currentQ];
+
+            if (state.status !== "unanswered") {
+                return;
+            }
+
+            state.answer = String(value).trim();
+
+            if (isAnswerCorrect(state.answer, question.ans)) {
+                state.status = "correct";
+
+                if (!state.scored) {
+                    score += 10;
+                    state.scored = true;
+                    document.getElementById("score-val").textContent = String(score);
+                }
+            } else {
+                state.status = "wrong";
+            }
+
+            loadQuestion();
+        }
+
+        function handleStep() {
+            const question = questions[currentQ];
+            const state = questionState[currentQ];
+
+            if (state.status !== "unanswered") {
+                nextQuestion();
+                return;
+            }
+
+            if (question.type === "select") {
+                alert("اختر إجابة أولاً");
+                return;
+            }
+
+            const input = document.getElementById("user-code-input");
+            const value = input.value.trim();
+
+            if (!value) {
+                alert("جاوب أولاً");
+                input.focus();
+                return;
+            }
+
+            checkAnswer(value);
+        }
+
+        function nextQuestion() {
+            if (currentQ < questions.length - 1) {
+                currentQ += 1;
                 loadQuestion();
             } else {
                 finishQuiz();
             }
-        } else {
-            document.getElementById('hint-box').style.display = 'block';
-            document.getElementById('hint-text').innerText = q.hint;
         }
-    }
 
-    function navigate(dir) {
-        saveCurrentAnswer();
-        const target = currentQ + dir;
+        function navigate(direction) {
+            const newQuestionIndex = currentQ + direction;
 
-        if (target >= 0 && target < questions.length) {
-            currentQ = target;
+            if (newQuestionIndex < 0 || newQuestionIndex >= questions.length) {
+                return;
+            }
+
+            saveCurrentInput();
+            currentQ = newQuestionIndex;
             loadQuestion();
-        } else if (dir > 0 && currentQ === questions.length - 1) {
-            finishQuiz();
-        }
-    }
-
-    function skipQuestion() {
-        saveCurrentAnswer();
-        questions[currentQ].skipped = true;
-        if(currentQ < questions.length - 1) {
-            currentQ++;
-            loadQuestion();
-        } else {
-            finishQuiz();
-        }
-    }
-
-    function revealAnswer() {
-        const q = questions[currentQ];
-
-        if (q.revealed) {
-            alert("الإجابة الصحيحة هي: " + q.ans);
-            return;
         }
 
-        if (q.done) {
-            alert("الإجابة الصحيحة هي: " + q.ans);
-            return;
+        function saveCurrentInput() {
+            const question = questions[currentQ];
+            const state = questionState[currentQ];
+
+            if (question.type === "input" && state.status === "unanswered") {
+                state.answer = document.getElementById("user-code-input").value;
+            }
         }
 
-        if(confirm("سيتم خصم 10 نقاط مرة واحدة ولن تُحتسب نقاط هذا السؤال، هل أنت موافق؟")) {
-            q.revealed = true;
+        function skipQuestion() {
+            saveCurrentInput();
+            nextQuestion();
+        }
+
+        function revealAnswer() {
+            const state = questionState[currentQ];
+
+            if (state.status !== "unanswered") {
+                return;
+            }
+
+            const approved = confirm("سيتم خصم 10 نقاط لإظهار الإجابة. هل تريد المتابعة؟");
+
+            if (!approved) {
+                return;
+            }
+
             score = Math.max(0, score - 10);
-            document.getElementById('score-val').innerText = score;
-            alert("الإجابة الصحيحة هي: " + q.ans);
+            document.getElementById("score-val").textContent = String(score);
+            state.status = "revealed";
+            state.answer = "";
+            loadQuestion();
         }
-    }
 
-    function finishQuiz() {
-        clearInterval(timer);
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('congrats-msg').innerText = `عمل رائع يا ${document.getElementById('username').value}! 👑`;
-        const correctAnswers = questions.filter(q => q.done).length;
-        document.getElementById('final-stats').innerText = `لقد جمعت ${score} نقطة، وأجبت عن ${correctAnswers} من ${questions.length} إجابة صحيحة، في زمن ${formatTime(seconds)}`;
-    }
-  </script>
+        function finishQuiz() {
+            clearInterval(timer);
+            timer = null;
+
+            const correctAnswers = questionState.filter(
+                (state) => state.status === "correct"
+            ).length;
+
+            document.getElementById("quiz-screen").classList.add("hidden");
+            document.getElementById("result-screen").classList.remove("hidden");
+            document.getElementById("congrats-msg").textContent =
+                `عمل رائع يا ${playerName}`;
+            document.getElementById("final-stats").textContent =
+                `النتيجة ${score} / ${questions.length * 10} — ` +
+                `الإجابات الصحيحة ${correctAnswers} / ${questions.length} — ` +
+                `الزمن ${formatTime(seconds)}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderSlide();
+
+            document.getElementById("username").addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    initQuiz();
+                }
+            });
+
+            document.getElementById("user-code-input").addEventListener("input", (event) => {
+                const state = questionState[currentQ];
+                const question = questions[currentQ];
+
+                if (question.type === "input" && state.status === "unanswered") {
+                    state.answer = event.target.value;
+                }
+            });
+
+            document.getElementById("user-code-input").addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    handleStep();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
