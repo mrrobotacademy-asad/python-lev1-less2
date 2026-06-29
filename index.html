@@ -268,119 +268,131 @@ const questions = [
     { type: 'select', q: 'الروبوت (الدالة) ينفذ الأوامر عندما نـ ...؟', options: ['نحذفه', 'نناديه', 'نغلق الكمبيوتر'], ans: 'نناديه', hint: 'Call' },
     { type: 'input', q: 'علامة "لا يساوي" في بايثون هي؟', ans: '!=', hint: 'علامة تعجب ويساوي' }
 ];
+let currentQ = 0;
+let score = 0;
+let seconds = 0;
+let timer;
+let answered = false;
 
-    let currentSlide = 0;
-    let currentQ = 0, score = 0, seconds = 0, timer;
+function loadQuestion() {
+    answered = false;
 
-    function showSlide() {
-        const item = detailedExplanation[currentSlide];
-        document.getElementById('slide-content').innerHTML = `
-            <div class="explanation-card">
-                <h3>${item.title}</h3>
-                <div class="code-block">${item.code}</div>
-                <p>${item.desc}</p>
-                <p class="example-text">💡 مثال: ${item.example}</p>
-            </div>
-        `;
-        document.getElementById('slide-num').innerText = `${currentSlide + 1} / ${detailedExplanation.length}`;
-        document.getElementById('prevSlide').disabled = currentSlide === 0;
-        document.getElementById('nextSlide').disabled = currentSlide === detailedExplanation.length - 1;
+    const q = questions[currentQ];
+
+    document.getElementById('progress-text').innerText =
+        `السؤال ${currentQ + 1} / ${questions.length}`;
+
+    document.getElementById('q-text').innerText = q.q;
+    document.getElementById('q-code').innerText = q.code || "";
+    document.getElementById('q-code').style.display = q.code ? 'block' : 'none';
+
+    document.getElementById('hint-box').style.display = 'none';
+
+    if (q.type === 'select') {
+        document.getElementById('options-container').classList.remove('hidden');
+        document.getElementById('input-container').classList.add('hidden');
+
+        document.getElementById('options-container').innerHTML = '';
+
+        q.options.forEach(opt => {
+            const b = document.createElement('button');
+            b.className = 'option-btn';
+            b.innerText = opt;
+
+            b.onclick = () => {
+                if (answered) return;
+                q.userAns = opt;
+                checkAnswer(opt);
+            };
+
+            document.getElementById('options-container').appendChild(b);
+        });
+
+    } else {
+        document.getElementById('options-container').classList.add('hidden');
+        document.getElementById('input-container').classList.remove('hidden');
+        document.getElementById('user-code-input').value = q.userAns || '';
     }
+}
 
-    function moveSlide(dir) {
-        currentSlide += dir;
-        showSlide();
+function checkAnswer(val) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[currentQ];
+
+    const isCorrect =
+        val.toString().trim().toLowerCase() === q.ans.toString().trim().toLowerCase();
+
+    if (isCorrect) {
+        score += 10;
+        document.getElementById('score-val').innerText = score;
+    } else {
+        document.getElementById('hint-box').style.display = 'block';
+        document.getElementById('hint-text').innerText = q.hint || "راجع إجابتك";
     }
+}
 
-    window.onload = showSlide;
+function handleStep() {
+    const q = questions[currentQ];
 
-    function initQuiz() {
-        if(!document.getElementById('username').value.trim()) return alert("اكتب اسمك يا بطل أولاً!");
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.remove('hidden');
+    if (answered) return nextQuestion();
+
+    const val = q.type === 'select'
+        ? q.userAns
+        : document.getElementById('user-code-input').value.trim();
+
+    if (!val) return alert("جاوب أولاً");
+
+    checkAnswer(val);
+}
+
+function nextQuestion() {
+    if (currentQ < questions.length - 1) {
+        currentQ++;
         loadQuestion();
-        timer = setInterval(() => {
-            seconds++;
-            let m = Math.floor(seconds/60), s = seconds%60;
-            document.getElementById('timer-val').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-        }, 1000);
+    } else {
+        finishQuiz();
     }
+}
 
-    function loadQuestion() {
-        const q = questions[currentQ];
-        document.getElementById('progress-text').innerText = `السؤال ${currentQ + 1} / ${questions.length}`;
-        document.getElementById('q-text').innerText = q.q;
-        document.getElementById('q-code').innerText = q.code || "";
-        document.getElementById('q-code').style.display = q.code ? 'block' : 'none';
-        document.getElementById('hint-box').style.display = 'none';
-        
-        if(q.type === 'select') {
-            document.getElementById('options-container').classList.remove('hidden');
-            document.getElementById('input-container').classList.add('hidden');
-            document.getElementById('options-container').innerHTML = '';
-            q.options.forEach(opt => {
-                const b = document.createElement('button');
-                b.className = 'option-btn' + (q.userAns === opt ? ' selected' : '');
-                b.innerText = opt;
-                b.onclick = () => {
-                    document.querySelectorAll('.option-btn').forEach(x => x.classList.remove('selected'));
-                    b.classList.add('selected');
-                    q.userAns = opt;
-                };
-                document.getElementById('options-container').appendChild(b);
-            });
-        } else {
-            document.getElementById('options-container').classList.add('hidden');
-            document.getElementById('input-container').classList.remove('hidden');
-            document.getElementById('user-code-input').value = q.userAns || '';
-        }
+function navigate(dir) {
+    const newQ = currentQ + dir;
+    if (newQ >= 0 && newQ < questions.length) {
+        currentQ = newQ;
+        loadQuestion();
     }
+}
 
-    function handleStep() {
-        const q = questions[currentQ];
-        const val = q.type === 'select' ? q.userAns : document.getElementById('user-code-input').value.trim();
-        if(!val) return alert("جاوب أولاً يا بطل!");
+function skipQuestion() {
+    nextQuestion();
+}
 
-        if(val.toString().toLowerCase() === q.ans.toLowerCase()) {
-            if(!q.done) { score += 10; q.done = true; document.getElementById('score-val').innerText = score; }
-            if(currentQ < questions.length - 1) { currentQ++; loadQuestion(); } else { finishQuiz(); }
-        } else {
-            document.getElementById('hint-box').style.display = 'block';
-            document.getElementById('hint-text').innerText = q.hint;
-        }
+function revealAnswer() {
+    if (answered) return;
+
+    if (confirm("خصم 10 نقاط لإظهار الإجابة؟")) {
+        score = Math.max(0, score - 10);
+        document.getElementById('score-val').innerText = score;
+
+        alert("الإجابة الصحيحة: " + questions[currentQ].ans);
+
+        answered = true;
     }
+}
 
-    function navigate(dir) {
-        if(currentQ + dir >= 0 && currentQ + dir < questions.length) {
-            currentQ += dir;
-            loadQuestion();
-        }
-    }
+function finishQuiz() {
+    clearInterval(timer);
 
-    function skipQuestion() {
-        if(currentQ < questions.length - 1) {
-            currentQ++;
-            loadQuestion();
-        } else {
-            finishQuiz();
-        }
-    }
+    document.getElementById('quiz-screen').classList.add('hidden');
+    document.getElementById('result-screen').classList.remove('hidden');
 
-    function revealAnswer() {
-        if(confirm("سيتم خصم 10 نقاط لإظهار الحل، هل أنت موافق؟")) {
-            score -= 10;
-            document.getElementById('score-val').innerText = score;
-            alert("الإجابة الصحيحة هي: " + questions[currentQ].ans);
-        }
-    }
+    document.getElementById('congrats-msg').innerText =
+        `عمل رائع يا ${document.getElementById('username').value}`;
 
-    function finishQuiz() {
-        clearInterval(timer);
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('congrats-msg').innerText = `عمل رائع يا ${document.getElementById('username').value}! 👑`;
-        document.getElementById('final-stats').innerText = `لقد جمعت ${score} نقطة في زمن ${Math.floor(seconds/60)} دقيقة`;
-    }
-</script>
+    document.getElementById('final-stats').innerText =
+        `النتيجة ${score} / ${questions.length * 10} — الزمن ${Math.floor(seconds/60)} دقيقة`;
+}
+  </script>
 </body>
 </html>
